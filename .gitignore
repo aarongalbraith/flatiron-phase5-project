@@ -1,5 +1,5 @@
 # ignore data folder
-data/
+data/preprocessed
 # ignore checkpoints
 .ipynb_checkpoints
 # ignore unsaved presentation
