@@ -6,5 +6,12 @@ data/preprocessed.csv
 ~$presentation.pptx
 # ignore potential projects folder
 potential\ projects
+# ignore scratch notebooks
+notebooks/colab_notebook.ipynb
+notebooks/scratch work.ipynb
+notebooks/spare parts.ipynb
+notebooks/tuned_method.ipynb
+notebooks/tuned_rating.ipynb
+notebooks/wordcloud_issues.ipynb
 # only make edits locally (not on GitHub)
 # hit command + shift + period to view this in finder
