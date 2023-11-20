@@ -1,4 +1,4 @@
-# Reproducibility Notes
+Reproducibility Notes
 
 The notebook for this project can be run by anyone by following these steps:
 
