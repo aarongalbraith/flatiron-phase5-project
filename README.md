@@ -1,4 +1,6 @@
-# Aaron Galbraith Flatiron Data Science Phase 4 Project
+# Aaron Galbraith Flatiron Data Science Capstone Project
+
+![alt text](images/title.jpeg)
 
 ## Overview
 
@@ -19,18 +21,25 @@ After a substantial amount of cleaning, the data set included 21,779 records. Ea
 #### Drug Name
 These labels varied greatly. Many were specific brand names, while others were generic or chemical names, or even combinations of chemical names. 
 #### Condition
-
-![tweet count by brand](images/brand_dist.jpeg)
-
+This feature had many missing labels. We eventually trimmed this feature to just two labels: "Birth Control" and "Emergency Contraception". In fact there was some cross-mixing of these two conditions, i.e. records labeled "Birth Control" that actually reviewed drugs for emergency contraception purposes and vice versa.
 #### Review
-
+This was the text of the review that a user posted on drugs.com. There were a great deal of duplicate reviews, as explained further below.
 #### Rating
-
+Users submitted a rating between 1 and 10 accompanying each review.
 #### Date
-
+The records spanned from February 2008 to November 2017. The number of reviews surged in 2014.
 #### Useful Count
+This feature counted the number of "upvotes" recorded by other users. This did not factor into our analysis. In further inquiry, it would be wise to note that the increase in the number of records from 2014 onward likely correlates with an increase in upvotes that does not necessarily reflect *better* reviews but simply *more* of them. Any analysis of this feature should perhaps calculate upvotes as a percentage of the total upvotes during a certain timespan, such as a day or a month.
+## Data Preparation
+### Duplicates, drug names, and missing condition labels
+The majority of the records were entered twice: once with a brand name in the `drugName` feature and once with a generic or chemical name. *Some* of these duplicates had *one* missing condition label. By recognizing the nature of these special pairs, we were able to restore many of the missing condition labels (by matching them with their pair-mate).
 
-![tweet count by brand](images/sentiment_dist.jpeg)
+For the remaining missing condition labels, we assigned the label that most commonly corresponded with the drug name listed. For example, if a record specified a drug name of "Viagra" but had no condition label, we would assign it the condition of "Erectile Dysfunction", as that was the most common condition associated with Viagra.
+
+Once we had successfully restored as many missing condition labels as possible, we dropped the remaining records with missing condition labels and further dropped all records with condition labels other than "Birth Control" or "Emergency Contraceptive".
+
+There were still more duplication instances beyond the special brand/generic pairs described earlier. This involved instances of the same review (unmistakably verbatim) appearing in multiple records, sometimes on different dates, usually with differing numbers of upvotes. We assumed in these cases that the same user had posted a review multiple times. We collapsed these reviews into a single record and modified the `usefulCount` to reflect the *total* number of upvotes from all instances. In at least one case, a single representative `date` label had to be chosen arbitrarily from two options that were only one day apart.
+## Exploration
 
 ## Modeling
 
@@ -115,3 +124,5 @@ Find the notebook [here](https://github.com/aarongalbraith/flatiron-phase5-proje
 Find the presentation [here](https://github.com/aarongalbraith/flatiron-phase5-project/tree/main/deliverables/presentation.pdf)
 
 Find the github repository [here](https://github.com/aarongalbraith/flatiron-phase5-project/tree/main/deliverables/github.pdf)
+
+Find reproducibility notes and instructions to run the notebook [here](https://github.com/aarongalbraith/flatiron-phase5-project/tree/main/Reproducibility%20Notes.md)
