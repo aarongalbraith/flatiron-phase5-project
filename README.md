@@ -1,5 +1,11 @@
-# Aaron Galbraith Flatiron Data Science Capstone Project
+# Predicting Birth Control Sentiment
+#### Aaron Galbraith
+#### Flatiron Data Science Capstone Project
+https://www.linkedin.com/in/aarongalbraith \
+https://github.com/aarongalbraith
+#### Submitted: November 21, 2023
 
+![alt text](images/title.jpeg)
 ![alt text](images/title.jpeg)
 
 ## Overview
@@ -23,8 +29,9 @@ These labels varied greatly. Many were specific brand names, while others were g
 #### Condition
 This feature had many missing labels. We eventually trimmed this feature to just two labels: "Birth Control" and "Emergency Contraception". In fact there was some cross-mixing of these two conditions, i.e. records labeled "Birth Control" that actually reviewed drugs for emergency contraception purposes and vice versa.
 #### Review
-This was the text of the review that a user posted on drugs.com. There were a great deal of duplicate reviews, as explained further below.
+This feature was the text of the review that a user posted on drugs.com. There were a great deal of duplicate reviews, as explained further below.
 #### Rating
+![rating distribution](images/plot_rating_dist.png)
 Users submitted a rating between 1 and 10 accompanying each review.
 #### Date
 The records spanned from February 2008 to November 2017. The number of reviews surged in 2014.
@@ -39,30 +46,16 @@ For the remaining missing condition labels, we assigned the label that most comm
 Once we had successfully restored as many missing condition labels as possible, we dropped the remaining records with missing condition labels and further dropped all records with condition labels other than "Birth Control" or "Emergency Contraceptive".
 
 There were still more duplication instances beyond the special brand/generic pairs described earlier. This involved instances of the same review (unmistakably verbatim) appearing in multiple records, sometimes on different dates, usually with differing numbers of upvotes. We assumed in these cases that the same user had posted a review multiple times. We collapsed these reviews into a single record and modified the `usefulCount` to reflect the *total* number of upvotes from all instances. In at least one case, a single representative `date` label had to be chosen arbitrarily from two options that were only one day apart.
+
 ## Exploration
 
 ## Modeling
 
-There were so few tweets with negative sentiments that it caused a class imbalance issue. We decided to make a binary classifier between positive and non-positive tweets (by grouping negative and neutral tweets together as "non-positive"). Consolidating sentiments into a binary classification reduced the class imbalance problem. 67.4% of the records were labeled non-positive and 32.6% were positive.
+### Dummy Classifier (BASELINE)
 
-The goal in this case was simply to predict these labels as accurately as possible overall. If we had chosen to classify all three sentiments, then it might have made more sense to choose precision or recall of positive or negative tweets, but the only metric we used was accuracy.
+### Decision Tree
 
-The only other consideration was overfitting; we discounted models whose training accuracy was significantly higher than their test accuracy, even if the test accuracy was better than that of other models.
-
-All models involved removing a common list of stop words (as well as a list of stop words that we supplemented) and tokenizing, lemmatizing, and vectorizing the tweet text feature.
-
-### Naive Bayes (BASELINE)
-The basic Naive Bayes model gave training/test accuracies of 79.4%/71.5%. This was our baseline model.
-
-When we tuned the Naive Bayes model, we improved both scores (89.0%/72.2%). However, since it also widened the gap between training and test accuracy, we recognized this as an instance of overfitting the training data.
-
-When we experimented with oversampling, in an attempt to address the moderate class imbalance, it improved the training accuracy but worsened the test accuracy (86.7%/68.0%). Following this result, we abandoned all attempts at oversampling.
-
-### Random Forest
-The Random Forest models gave more examples of overfitting. The first result was 96.5%/73.2%, and the tuned model was 86.4%/72.5%.
-
-### Gradient Boost (FINAL)
-The Gradient Boost model, in our view, gave the strongest result without obviously overfitting the training data (74.9%/72.3%).
+### Logistic Regression
 
 ### Summary of Model Performance
 
@@ -87,35 +80,29 @@ We experimented with some other models as well, but none of the results were as 
 
 ### Confusion Matrix for Final Model
 
-![confusion matrix for gradient boost](images/confusion_matrix.jpeg)
-
-The normalized confusion matrix for the Gradient Boost model shows that its recall is much higher for non-positives than for positives, which is certainly a drawback of this model.
-
 ## Evaluation
 
-Most of the models betray evidence of overfitting the training data. The Bagged Trees, Adaboost, and Gradient Boost models were the only models we considered likely not to be overfit. Of these three, Gradient Boost had the best test accuracy.
-
 ## Recommendations
-
-1. Evidence suggests the pop-up store was very popular. This was an effective way to get people excited about the product at a time when they could share their excitement with others around them. This event should be repeated if possible.
-
-2. Apple should consider addressing battery life and design issues with some of their products. These topics didn't fully dominate the discussion by any means, but they were the most significant of Apple's negative topics of any substance.
-
-3. The party Google hosted was clearly very popular and appeared to drive a lot of what buzz they enjoyed at the festival. Apple should consider hosting parties at festivals in a similar manner.
+#### 1. Consider developing and marketing a patch as an alternative to the pill
+Users rate the patch quite highly, but it is used much less than the pill. There is room for growth here.
+#### 2. Emphasize favorable weight and body image effects of patch methods
+Our word clouds and term importance analysis shows that users appreciate these aspects of the patch.
+#### 3. Abandon injectable product (Depo-Provera)
+This method is not commonly used and not highly rated.
+#### 4. Apply our prediction models in online spaces
+Look in spaces such as Reddit and Quora to gather updated data on public sentiment toward the various birth control methods.
 
 ## Further Inquiry
 
-More sophisticated modeling techniques might be able to better analyze either a direct positive v. negative comparison or even a multi-class analysis (positive, negative, and neutral). The class imbalances make this difficult.
-
-More direct analysis could be done with the tweets that mentioned *both* Apple and Google brands. Perhaps these tweets feature direct comparisons that could be very illuminating.
-
-With more time we would have liked to explore feature importances of the various models.
-
-We would also like to have explored *why* the models were overfitting the training data so consistently and what aspects could have been changed to prevent this.a
-
-We would have liked to investigate other features, such as tweet length (counting both characters and words), to see if that added anything to the models.
-
-It may also be worth rethinking our evaluation metric. It could be of more value to prioritize true positives (recall) than just focusing on accuracy.
+- Incorporate upvotes more into analysis and modeling
+- Explore the possibility of a recommendation algorithm
+- More feature engineering possibilities
+    - whether words are in English (spelled correctly)
+    - use of emoticons
+    - whether it uses slang sex terms versus technical language
+- Analyze evidence of reviewers switching methods or brands
+- Understand what went wrong with XGB reproducibility in the multiclass model
+- Scrape new text from Reddit, Quora and apply modeling to it
 
 ## Links to PDFs
 
