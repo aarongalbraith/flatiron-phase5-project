@@ -17,7 +17,7 @@ Following the US Supreme Court ruling in [Dobbs (2022)](https://www.supremecourt
 
 In 2018, researchers Surya Kallumadi and Felix Gräßer at UC Irvine created the [UCI ML Drug Review Dataset](https://www.kaggle.com/datasets/jessicali9530/kuc-hackathon-winter-2018/) after collecting reviews from [Drugs.com](https://www.drugs.com/) that users had written about various drugs between 2008 and 2017. A substantial portion of these reviews addressed birth control and emergency contraception drugs.
 
-People often share similar sentiments with each other in online spaces such as [Reddit](https://www.reddit.com/r/birthcontrol/) and [Quora](https://www.quora.com/search?q=birth%20control). Our project analyzes the Drug Review Dataset in order to 1) learn what the Dataset can tell Pfizer about sentiments toward the various methods of birth control and 2) train a model that can be applied in other online spaces to determine what birth control methods users are discussing and how they feel about them. With this tool, Pfizer can more effectively market their products to the increased demand created by the Dobbs ruling.
+People often share experiences and concerns with each other in online spaces such as [Reddit](https://www.reddit.com/r/birthcontrol/) and [Quora](https://www.quora.com/search?q=birth%20control), not exactly the same as they might in a drug review, but still using much of the same language. Our project analyzes the Drug Review Dataset in order to 1) learn what the Dataset can tell Pfizer about sentiments toward the various methods of birth control and 2) train a model that can be applied in other online spaces to determine what birth control methods users are discussing and how they feel about them. With this tool, Pfizer can more effectively market their products to the increased demand created by the Dobbs ruling.
 
 ### Data Understanding
 
@@ -53,7 +53,7 @@ This shows the overall distribution of those ratings.
 
 ![date distribution](images/plot_dates.png)
 
-The records spanned from February 2008 to November 2017. The number of reviews surged in 2014.
+The records spanned from February 2008 to November 2017. The number of reviews surged in 2015.
 
 ![rating comparison over time](images/plot_rating_time.png)
 
@@ -61,25 +61,25 @@ The average ratings of the methods vary over time.
 
 #### Useful Count (Upvotes)
 
-This feature counted the number of "upvotes" recorded by other users. This did not factor into our analysis. In further inquiry, it would be wise to note that the increase in the number of records from 2014 onward likely correlates with an increase in upvotes that does not necessarily reflect *better* reviews but simply *more* of them. Any analysis of this feature should perhaps calculate upvotes as a percentage of the total upvotes during a certain timespan, such as a day or a month.
+This feature counted the number of "upvotes" recorded by other users. This did not factor into our analysis. In further inquiry, it would be wise to note that the increase in the number of records from 2014 onward likely correlates with an increase in upvotes that does not necessarily reflect *better* reviews but simply *more* readers using the site and upvoting them. Any analysis of this feature should perhaps calculate upvotes as a percentage of the total upvotes during a certain timespan, such as a day or a month.
 
 ## Data Preparation
 
 ### Duplicates, drug names, and missing condition labels
 
-The majority of the records were entered twice: once with a brand name in the `drugName` feature and once with a generic or chemical name. *Some* of these duplicates had *one* missing condition label. By recognizing the nature of these special pairs, we were able to restore many of the missing condition labels (by matching them with their pair-mate).
+The majority of the records were entered twice: once with a brand name in the `drugName` feature and once with a generic or chemical name. Some of these special pairs was missing its condition label. In these instances we were able to restore the missing condition labels (by matching them with their pair-mate).
 
-For the remaining missing condition labels, we assigned the label that most commonly corresponded with the drug name listed. For example, if a record specified a drug name of "Viagra" but had no condition label, we would assign it the condition of "Erectile Dysfunction", as that was the most common condition associated with Viagra.
+For the remaining missing condition labels, we assigned the label that most commonly corresponded with the drug name listed. For example, if a record specified a drug name of "Viagra" but had no condition label, we would assign it the condition of "Erectile Dysfunction", as that was the most common condition associated with Viagra. In this way we were able to confirm which of the records with missing labels were relevant to our analysis. Only after this process was complete could we drop all the records with condition labels other than "Birth Control" or "Emergency Contraceptive".
 
-Once we had successfully restored as many missing condition labels as possible, we dropped the remaining records with missing condition labels and further dropped all records with condition labels other than "Birth Control" or "Emergency Contraceptive".
-
-There were still more duplication instances beyond the special brand/generic pairs described earlier. This involved instances of the same review (unmistakably verbatim) appearing in multiple records, sometimes on different dates, usually with differing numbers of upvotes. We assumed in these cases that the same user had posted a review multiple times. We collapsed these reviews into a single record and modified the `usefulCount` to reflect the *total* number of upvotes from all instances. In at least one case, a single representative `date` label had to be chosen arbitrarily from two options that were only one day apart.
+There were still more duplication instances beyond the special brand/generic pairs described earlier. This involved instances of the same review (unmistakably verbatim) appearing in multiple records, usually on the same day or within a day, and usually with differing numbers of upvotes. We assumed in these cases that the same user had posted a review multiple times. We merged these reviews into a single record and modified the `usefulCount` to reflect the *total* number of upvotes from all instances. In at least one case, a single representative `date` label had to be chosen arbitrarily from two options that were only one day apart.
 
 ## Exploration
 
 ![use percentage plot](images/plot_use_pct.png)
 
 This shows that the pill is the dominant method, and IUDs are the next most commonly used, while most other prescription methods are not very commonly used.
+
+The common denominator for all the groups measured above is women who are at risk for unintended pregnancy (i.e. having intercourse but not intending pregnancy). The orange bar represents women who use non-prescription methods (e.g. condoms, withdrawal, rhythm method) and therefore must be attentive to the preventative measure every time they have sex. The red bar represents women who are most at risk for unintended pregnancy, engaging in sex but using no method at all. Both of these groups represent a large potential customer base.
 
 ![relative sentiment distribution](images/plot_sent_dist_2.png)
 
@@ -146,9 +146,11 @@ We experimented with some other models as well, but none of the results were as 
 | Logistic Regression (tuned) | 0.90 | 94.2% |
 
 
-### Confusion Matrix for Final Method Prediction Model
+### Confusion Matrix for Final Method Prediction Model — Tuned Logistic Regression
 
-![confustion matrix for tuned logistic regression method prediction model](images/m1_lrt_cm.png)
+Below is the confusion matrix for the tuned logistic regression model. 
+
+![confusion matrix for tuned logistic regression method prediction model](images/cm_1.jpg)
 
 ### Evaluation of Method Prediction Model
 
@@ -158,6 +160,9 @@ Our final model is the tuned logistic regression model. It returns the highest F
 
 ### Metric
 
+The sentiment prediction model classifies records into positive or negative sentiments. For the purposes of this model, we removed records with a rating of 5.0 and used that as the separation point between positive and negative.
+
+There is a class imbalance in this case of nearly 2:1. We chose ROC-AUC as our scoring metric. This metric is good at handling class imbalance.
 
 ### Dummy Classifier (BASELINE)
 
@@ -169,7 +174,7 @@ The decision tree classifier improved on the baseline significantly, and the tun
 
 ### Logistic Regression
 
-This model and its tuned version performed better than all the rest.
+The untuned logistic regression model performed better than the others that came before. Tuning this model improved the ROC-AUC score a little and overall accuracy a lot. This came with a decrease in recall of negative sentiments, but the overall accuracy is enough to make the tuned model preferable.
 
 ### Summary of Model Performance
 
@@ -187,7 +192,14 @@ We experimented with some other models as well, but none of the results were as 
 
 ### Confusion Matrix for Final Sentiment Prediction Model
 
-![confustion matrix for tuned logistic regression sentiment prediction model](images/m2_lrt_cm.png)
+Below is the confusion matrix for the tuned logistic regression model. 
+
+![confusion matrix for tuned logistic regression sentiment prediction model](images/cm_2.jpg)
+
+### ROC-AUC curve for Final Sentiment Prediction Model
+
+Below is the ROC-AUC curve for the tuned logistic regression model.
+![confusion matrix for tuned logistic regression sentiment prediction model](images/rocauc_2.jpg)
 
 ### Evaluation of Sentiment Prediction Model
 
