@@ -4,6 +4,9 @@ data/preprocessed.csv
 .ipynb_checkpoints
 # ignore unsaved presentation
 ~$presentation.pptx
+# ignore old presentation
+deliverables/presentation_old.pdf
+presentation.pptx
 # ignore potential projects folder
 potential\ projects
 # ignore scratch notebooks
